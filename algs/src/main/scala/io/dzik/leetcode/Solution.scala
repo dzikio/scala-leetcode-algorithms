@@ -3,7 +3,8 @@ package io.dzik.leetcode
 import scala.annotation.tailrec
 import scala.collection.mutable
 
-import io.dzik.leetcode.Utils.ListNode
+import io.dzik.leetcode.LeetCodeApi.ListNode
+import io.dzik.utils.Exceptions
 
 object Solution extends App {
 
@@ -19,7 +20,7 @@ object Solution extends App {
     nums.zipWithIndex
       .find { case (x, i) => xToI.get(target - x).exists(_ > i) }
       .map { case (x, i) => Array(i, xToI(target - x)) }
-      .getOrElse(throw Utils.BadConditions)
+      .getOrElse(throw Exceptions.BadConditions)
   }
 
   def twoSumImperative(nums: Array[Int], target: Int): Array[Int] = {
@@ -32,7 +33,7 @@ object Solution extends App {
       if (xToI.get(missing).exists(_ > i)) return Array(i, xToI(missing))
     }
 
-    throw Utils.BadConditions
+    throw Exceptions.BadConditions
   }
 
   /** Title: 2. Add Two Numbers
