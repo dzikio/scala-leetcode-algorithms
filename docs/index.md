@@ -28,3 +28,15 @@
 |  M  | [33. Search in Rotated Sorted Array](https://leetcode.com/problems/search-in-rotated-sorted-array/)                                                   |
 |  M  | [34. Find First and Last Position of Element in Sorted Array](https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/) |
 |  E  | [35. Search Insert Position](https://leetcode.com/problems/search-insert-position/)                                                                   |
+|  M  | [36. Valid Sudoku](https://leetcode.com/problems/valid-sudoku/)                                                                                       |
+|  M  | [38. Count and Say](https://leetcode.com/problems/count-and-say/)                                                                                     |
+|  M  | [39. Combination Sum](https://leetcode.com/problems/combination-sum/)                                                                                 |
+|  M  | [40. Combination Sum II](https://leetcode.com/problems/combination-sum-ii/)                                                                           |
+|  H  | [42. Trapping Rain Water](https://leetcode.com/problems/trapping-rain-water/)                                                                         |
+|  M  | [43. Multiply Strings](https://leetcode.com/problems/multiply-strings/)                                                                               |
+|  M  | [45. Jump Game II](https://leetcode.com/problems/jump-game-ii/)                                                                                       |
+|  M  | [46. Permutations](https://leetcode.com/problems/permutations/)                                                                                       |
+|  M  | [47. Permutations II](https://leetcode.com/problems/permutations-ii/)                                                                                 |
+|  M  | [48. Rotate Image](https://leetcode.com/problems/rotate-image/)                                                                                       |
+|  M  | [49. Group Anagrams](https://leetcode.com/problems/group-anagrams/)                                                                                   |
+|  M  | [50. Pow(x, n)](https://leetcode.com/problems/powx-n/)                                                                                                |

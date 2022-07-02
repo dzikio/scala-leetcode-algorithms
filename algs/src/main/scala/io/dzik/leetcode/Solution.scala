@@ -722,4 +722,318 @@ object Solution extends App {
 
     lo
   }
+
+  /** Title: 36. Valid Sudoku
+    *
+    * Link: https://leetcode.com/problems/valid-sudoku/
+    *
+    * Difficulty: Medium
+    */
+  def isValidSudoku(board: Array[Array[Char]]): Boolean = {
+    def hasUniqueDigits(xs: Seq[Char]): Boolean = {
+      val digits = xs.filter(_.isDigit)
+
+      digits.toSet.size == digits.length
+    }
+
+    def isValidRow(r: Int): Boolean = hasUniqueDigits(board(r))
+
+    def isValidColumn(c: Int) = hasUniqueDigits(board.map(_(c)))
+
+    def isValidSquare(ulr: Int, ulc: Int): Boolean = {
+      val square = for {
+        row <- ulr until ulr + 3
+        col <- ulc until ulc + 3
+      } yield board(row)(col)
+
+      hasUniqueDigits(square)
+    }
+
+    board.indices.forall(isValidRow) &&
+    board.indices.forall(isValidColumn) &&
+    (for {
+      r <- Seq(0, 3, 6)
+      c <- Seq(0, 3, 6)
+    } yield (r, c)).forall(xy => isValidSquare(xy._1, xy._2))
+  }
+
+  /** Title: 38. Count and Say
+    *
+    * Link: https://leetcode.com/problems/count-and-say/
+    *
+    * Difficulty: Medium
+    */
+  def countAndSay(n: Int): String = {
+    def inner(prev: StringBuilder, j: Int): String = {
+      if (j == n) {
+        prev.toString()
+      } else {
+        var i = 0
+        val cur = new mutable.StringBuilder()
+
+        while (i < prev.length()) {
+          val what = prev(i)
+          var cnt = 0
+
+          while (cnt == 0 || i < prev.length() && prev(i) == prev(i - 1)) {
+            cnt += 1
+            i += 1
+          }
+
+          cur ++= cnt.toString
+          cur += what
+        }
+
+        inner(cur, j + 1)
+      }
+    }
+
+    inner(new mutable.StringBuilder("1"), 1)
+  }
+
+  /** Title: 39. Combination Sum
+    *
+    * Link: https://leetcode.com/problems/combination-sum/
+    *
+    * Difficulty: Medium
+    */
+  def combinationSum(xs2: Array[Int], target: Int): List[List[Int]] = {
+    val res = mutable.Set.empty[List[Int]]
+
+    val xs = xs2.sorted
+
+    def inner(start: Int, left: Int, cur: mutable.ArrayDeque[Int]): Unit =
+      if (left < 0) ()
+      else if (left == 0) res += cur.toList
+      else {
+        (start until xs.length).foreach { i =>
+          cur += xs(i)
+          inner(i, left - xs(i), cur)
+          cur.removeLast()
+        }
+      }
+
+    inner(0, target, mutable.ArrayDeque.empty[Int])
+    res.toList
+  }
+
+  /** Title: 40. Combination Sum II
+    *
+    * Link: https://leetcode.com/problems/combination-sum-ii/
+    *
+    * Difficulty: Medium
+    */
+  def combinationSum2(candidates: Array[Int], target: Int): List[List[Int]] = {
+    val xs = candidates.filter(_ <= target).sorted
+    val res = mutable.Set.empty[List[Int]]
+    val acc = mutable.ArrayDeque.empty[Int]
+
+    def inner(i: Int, sum: Int): Unit =
+      if (sum == target) res += acc.toList
+      else {
+        var j = i
+        while (j < xs.length && xs(j) + sum <= target)
+          if (j > i && xs(j) == xs(j - 1)) j += 1
+          else {
+            acc += xs(j)
+            inner(j + 1, sum + xs(j))
+            acc.removeLast()
+
+            j += 1
+          }
+      }
+
+    inner(0, 0)
+
+    res.toList
+  }
+
+  /** Title: 42. Trapping Rain Water
+    *
+    * Link: https://leetcode.com/problems/trapping-rain-water/
+    *
+    * Difficulty: Hard
+    */
+  def trap(hs: Array[Int]): Int = {
+    val largerToTheLeft = hs
+      .foldLeft((List.empty[Int], 0)) { case ((acc, m), h) =>
+        val maxTillNow = m max h
+        (maxTillNow :: acc, maxTillNow)
+      }
+      ._1
+      .reverse
+
+    val largerToTheRight = hs
+      .foldRight((List.empty[Int], 0)) { case (h, (acc, m)) =>
+        val maxTillNow = m max h
+        (maxTillNow :: acc, maxTillNow)
+      }
+      ._1
+
+    ((largerToTheLeft zip largerToTheRight) zip hs).foldLeft(0) {
+      case (s, ((l, r), h)) => s + ((l min r) - h)
+    }
+  }
+
+  /** Title: 43. Multiply Strings
+    *
+    * Link: https://leetcode.com/problems/multiply-strings/
+    *
+    * Difficulty: Medium
+    */
+  def multiply(a: String, b: String): String = {
+    if (a == "0" || b == "0") return "0"
+    val temp = Array.ofDim[Int](b.length + a.length)
+
+    for {
+      i <- a.indices
+      j <- b.indices
+    } {
+      val x =
+        (a(a.length - 1 - i) - '0') * (b(b.length - 1 - j) - '0') + temp(i + j)
+
+      temp(j + i) = x % 10
+      temp(j + i + 1) += (x / 10)
+    }
+
+    temp.reverse.dropWhile(_ == 0).mkString
+  }
+
+  /** Title: 45. Jump Game II
+    *
+    * Link: https://leetcode.com/problems/jump-game-ii/
+    *
+    * Difficulty: Medium
+    */
+  def jump(xs: Array[Int]): Int = {
+    val N = xs.length
+    val dp = Array.fill(N)(Int.MaxValue)
+
+    dp(0) = 0
+
+    for (i <- 0 until N - 1) {
+      val M = xs(i) + i
+      for (j <- i + 1 to (M min N - 1)) {
+        dp(j) = (dp(i) + 1) min dp(j)
+      }
+    }
+
+    dp.last
+  }
+
+  /** Title: 46. Permutations
+    *
+    * Link: https://leetcode.com/problems/permutations/
+    *
+    * Difficulty: Medium
+    */
+  def permute(xs: Array[Int]): List[List[Int]] = {
+    val res = mutable.ListBuffer.empty[List[Int]]
+
+    def inner(usedIndices: Set[Int], acc: List[Int]): Unit =
+      if (usedIndices.isEmpty) res += acc
+      else {
+        for (i <- usedIndices)
+          inner(usedIndices - i, xs(i) :: acc)
+      }
+
+    inner(xs.indices.toSet, Nil)
+
+    res.toList
+  }
+
+  /** Title: 47. Permutations II
+    *
+    * Link: https://leetcode.com/problems/permutations-ii/
+    *
+    * Difficulty: Medium
+    */
+  def permuteUnique(xs: Array[Int]): List[List[Int]] = {
+    val res = mutable.Set.empty[List[Int]]
+
+    def inner(indices: Set[Int], current: List[Int]): Unit =
+      if (indices.isEmpty) res += current
+      else {
+        for (i <- indices)
+          inner(indices - i, xs(i) :: current)
+      }
+
+    inner(xs.indices.toSet, Nil)
+
+    res.toList
+  }
+
+  /** Title: 48. Rotate Image
+    *
+    * Link: https://leetcode.com/problems/rotate-image/
+    *
+    * Difficulty: Medium
+    */
+  def rotate(m: Array[Array[Int]]): Unit = {
+    val n = m.length
+
+    @tailrec
+    def inner(level: Int): Unit =
+      if (level == n / 2) ()
+      else {
+        for (k <- 0 to n - (2 * (level + 1))) {
+          val l = level
+          val r = n - 1 - level
+
+          val (ul, ur, lr, ll) = (
+            m(l)(l + k),
+            m(l + k)(r),
+            m(r)(r - k),
+            m(r - k)(l)
+          )
+
+          m(l)(l + k) = ll
+          m(l + k)(r) = ul
+          m(r)(r - k) = ur
+          m(r - k)(l) = lr
+        }
+
+        inner(level + 1)
+      }
+
+    inner(0)
+  }
+
+  /** Title: 49. Group Anagrams
+    *
+    * Link: https://leetcode.com/problems/group-anagrams/
+    *
+    * Difficulty: Medium
+    */
+  def groupAnagrams(strs: Array[String]): List[List[String]] = {
+    strs
+      .groupBy(_.sorted)
+      .view
+      .mapValues(_.toList)
+      .values
+      .toList
+  }
+
+  /** Title: 50. Pow(x, n)
+    *
+    * Link: https://leetcode.com/problems/powx-n/
+    *
+    * Difficulty: Medium
+    */
+  def myPow(x: Double, n: Int): Double = {
+    def inner(x: Double, n: Long): Double =
+      if (n == 0) 1
+      else if (n == 1) x
+      else if (n == 2) x * x
+      else if (n % 2 == 0) {
+        val half = inner(x, n / 2)
+        half * half
+      } else {
+        val half = inner(x, (n - 1) / 2)
+        x * half * half
+      }
+
+    if (n < 0) 1 / inner(x, -(n.toLong))
+    else inner(x, n)
+  }
 }
