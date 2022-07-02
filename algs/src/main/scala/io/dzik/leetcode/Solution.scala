@@ -422,4 +422,304 @@ object Solution extends App {
 
     inner(digits, List(""))
   }
+
+  /** Title: 20. Valid Parentheses
+    *
+    * Link: https://leetcode.com/problems/valid-parentheses/
+    *
+    * Difficulty: Easy
+    */
+  def isValid(s: String): Boolean = {
+    val q = mutable.ArrayDeque[Char]()
+    val oToC = Map(
+      '(' -> ')',
+      '[' -> ']',
+      '{' -> '}'
+    )
+
+    val isOpen: Char => Boolean = oToC.contains
+
+    for (c <- s)
+      if (isOpen(c)) {
+        q.prepend(c)
+      } else {
+        if (q.isEmpty) return false
+        val lastOpen = q.removeHead()
+        if (oToC(lastOpen) != c) return false
+      }
+
+    q.isEmpty
+  }
+
+  /** Title: 21. Merge Two Sorted Lists
+    *
+    * Link: https://leetcode.com/problems/merge-two-sorted-lists/
+    *
+    * Difficulty: Easy
+    */
+  def mergeTwoLists(l1: ListNode, l2: ListNode): ListNode = {
+    var (x, y) = (l1, l2)
+    val dummy = new ListNode()
+    var node = dummy
+
+    while (Option(x).isDefined && Option(y).isDefined) {
+      if (x.x < y.x) {
+        node.next = x
+        x = x.next
+      } else {
+        node.next = y
+        y = y.next
+      }
+      node = node.next
+    }
+
+    node.next = if (Option(x).isDefined) x else y
+
+    dummy.next
+  }
+
+  /** Title: 22. Generate Parentheses
+    *
+    * Link: https://leetcode.com/problems/generate-parentheses/
+    *
+    * Difficulty: Medium
+    */
+  def generateParenthesis(n: Int): List[String] = {
+    val res = new mutable.ArrayBuffer[String]()
+    val sb = new StringBuilder()
+
+    def inner(o: Int, c: Int): Unit =
+      if (o == n && o == c) res += sb.toString()
+      else {
+        if (o < n && o >= c) {
+          sb.append('(')
+          inner(o + 1, c)
+          sb.deleteCharAt(sb.length() - 1)
+        }
+        if (c < n && o > c) {
+          sb.append(')')
+          inner(o, c + 1)
+          sb.deleteCharAt(sb.length() - 1)
+        }
+      }
+
+    inner(0, 0)
+    res.toList
+  }
+
+  /** Title: 26. Remove Duplicates from Sorted Array
+    *
+    * Link: https://leetcode.com/problems/remove-duplicates-from-sorted-array/
+    *
+    * Difficulty: Easy
+    */
+  def removeDuplicates(xs: Array[Int]): Int = {
+    if (xs.isEmpty) return 0
+
+    @tailrec
+    def inner(l: Int, r: Int): Int =
+      if (r == xs.length) l
+      else {
+        if (xs(r) != xs(r - 1)) {
+          xs(l) = xs(r)
+          inner(l + 1, r + 1)
+        } else {
+          inner(l, r + 1)
+        }
+      }
+
+    inner(1, 1)
+  }
+
+  def removeDuplicatesIter(xs: Array[Int]): Int = {
+    if (xs.isEmpty) return 0
+    var l = 1
+    var r = 1
+
+    while (r < xs.length) {
+      if (xs(r) != xs(r - 1)) {
+        xs(l) = xs(r)
+        l += 1
+      }
+
+      r += 1
+    }
+
+    l
+  }
+
+  /** Title: 27. Remove Element
+    *
+    * Link: https://leetcode.com/problems/remove-element/
+    *
+    * Difficulty: Easy
+    */
+  def removeElement(xs: Array[Int], toRemove: Int): Int = {
+    @tailrec
+    def inner(r: Int, w: Int): Int =
+      if (r == xs.length) w
+      else if (xs(r) != toRemove) {
+        xs(w) = xs(r)
+        inner(r + 1, w + 1)
+      } else {
+        inner(r + 1, w)
+      }
+
+    inner(0, 0)
+  }
+
+  def removeElementIter(xs: Array[Int], toRemove: Int): Int = {
+    var w = 0
+
+    for (r <- xs) {
+      if (r != toRemove) {
+        xs(w) = r
+        w += 1
+      }
+    }
+
+    w
+  }
+
+  /** Title: 28. Implement strStr()
+    *
+    * Link: https://leetcode.com/problems/implement-strstr/
+    *
+    * Difficulty: Easy
+    */
+  def strStr(a: String, b: String): Int = {
+    if (b.isEmpty) return 0
+    if (b.length > a.length) return -1
+
+    for (i <- a.indices)
+      if (a(i) == b(0)) {
+        if (i + b.length <= a.length && a.substring(i, i + b.length) == b)
+          return i
+      }
+    -1
+  }
+
+  /** Title: 31. Next Permutation
+    *
+    * Link: https://leetcode.com/problems/next-permutation/
+    *
+    * Difficulty: Medium
+    */
+  def nextPermutation(xs: Array[Int]): Unit = {
+    def swap(arr: Array[Int], i: Int, j: Int) = {
+      val temp = arr(i)
+      arr(i) = arr(j)
+      arr(j) = temp
+    }
+
+    var k = -1
+
+    for (i <- 0 until xs.length - 1)
+      if (xs(i) < xs(i + 1)) k = i
+    var l = -1
+
+    if (k != -1) {
+      for (i <- k + 1 until xs.length)
+        if (xs(k) < xs(i)) l = i
+
+      swap(xs, k, l)
+    }
+
+    l = k + 1
+    var r = xs.length - 1
+    while (l < r) {
+      swap(xs, l, r)
+      l += 1
+      r -= 1
+    }
+  }
+
+  /** Title: 33. Search in Rotated Sorted Array
+    *
+    * Link: https://leetcode.com/problems/search-in-rotated-sorted-array/
+    *
+    * Difficulty: Medium
+    */
+  val NotFound = -1
+
+  def search(xs: Array[Int], target: Int): Int = {
+    var lo = 0
+    var hi = xs.length - 1
+
+    while (lo <= hi) {
+      val mid = (hi + lo) / 2
+      val x = xs(mid)
+
+      if (x == target) return mid
+
+      if (xs(lo) <= x) { // important <=
+        if (xs(lo) <= target && target < x) hi = mid - 1
+        else lo = mid + 1
+      } else {
+        if (xs(hi) >= target && target > x) lo = mid + 1
+        else hi = mid - 1
+      }
+    }
+
+    NotFound
+  }
+
+  /** Title: 34. Find First and Last Position of Element in Sorted Array
+    *
+    * Link:
+    * https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/
+    *
+    * Difficulty: Medium
+    */
+  def searchRange(xs: Array[Int], t: Int): Array[Int] = {
+    if (xs.isEmpty) return Array(-1, -1)
+    var lo = 0
+    var hi = xs.length - 1
+    var loRes = -1
+    while (lo <= hi) {
+      val mid = (lo + hi) / 2
+
+      if (xs(mid) == t) loRes = mid
+
+      if (xs(mid) < t) lo = mid + 1
+      else hi = mid - 1
+    }
+
+    if (loRes == -1) return Array(-1, -1)
+
+    lo = 0
+    hi = xs.length - 1
+    var hiRes = -1
+    while (lo <= hi) {
+      val mid = (lo + hi) / 2
+
+      if (xs(mid) == t) hiRes = mid
+
+      if (xs(mid) > t) hi = mid - 1
+      else lo = mid + 1
+    }
+
+    Array(loRes, hiRes)
+  }
+
+  /** Title: 35. Search Insert Position
+    *
+    * Link: https://leetcode.com/problems/search-insert-position/
+    *
+    * Difficulty: Easy
+    */
+  def searchInsert(xs: Array[Int], x: Int): Int = {
+    var lo = 0
+    var hi = xs.length - 1
+
+    while (lo <= hi) {
+      val mid = (lo + hi) / 2
+
+      if (xs(mid) == x) return mid
+      else if (xs(mid) > x) hi = mid - 1
+      else lo = mid + 1
+    }
+
+    lo
+  }
 }
